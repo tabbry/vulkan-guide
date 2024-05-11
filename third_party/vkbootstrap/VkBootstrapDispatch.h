@@ -4685,11 +4685,6 @@ struct DispatchTable {
     }
 #endif
 #if (defined(VK_NV_low_latency2))
-    void getLatencyTimingsNV(VkSwapchainKHR swapchain, uint32_t* pTimingCount, VkGetLatencyMarkerInfoNV* pLatencyMarkerInfo) const noexcept {
-        fp_vkGetLatencyTimingsNV(device, swapchain, pTimingCount, pLatencyMarkerInfo);
-    }
-#endif
-#if (defined(VK_NV_low_latency2))
     void queueNotifyOutOfBandNV(VkQueue queue, const VkOutOfBandQueueTypeInfoNV* pQueueTypeInfo) const noexcept {
         fp_vkQueueNotifyOutOfBandNV(queue, pQueueTypeInfo);
     }
