@@ -93,6 +93,12 @@ void VulkanEngine::init_default_data() {
 
 	rectangle = uploadMesh(rect_indices,rect_vertices);
 
+	//delete the rectangle data on engine shutdown
+	_mainDeletionQueue.push_function([&](){
+		destroy_buffer(rectangle.indexBuffer);
+		destroy_buffer(rectangle.vertexBuffer);
+	});
+
 //< init_data
 	testMeshes = loadGltfMeshes(this,"..\\..\\assets\\basicmesh.glb").value();
 }
@@ -103,11 +109,7 @@ void VulkanEngine::cleanup()
 		
 		//make sure the gpu has stopped doing its things
 		vkDeviceWaitIdle(_device);
-		for (auto& frame : _frames) {
-			
-		}
-
-		_mainDeletionQueue.flush();
+		
 		for (int i = 0; i < FRAME_OVERLAP; i++) {
 
 			vkDestroyCommandPool(_device, _frames[i]._commandPool, nullptr);
@@ -119,6 +121,13 @@ void VulkanEngine::cleanup()
 
 			_frames[i]._deletionQueue.flush();
 		}
+
+		for (auto& mesh : testMeshes) {
+			destroy_buffer(mesh->meshBuffers.indexBuffer);
+			destroy_buffer(mesh->meshBuffers.vertexBuffer);
+		}
+
+		_mainDeletionQueue.flush();
 
 		destroy_swapchain();
 
@@ -154,7 +163,7 @@ void VulkanEngine::draw_background(VkCommandBuffer cmd)
 void VulkanEngine::draw_geometry(VkCommandBuffer cmd)
 {
 	//begin a render pass  connected to our draw image
-	VkRenderingAttachmentInfo colorAttachment = vkinit::attachment_info(_drawImage.imageView, nullptr, VK_IMAGE_LAYOUT_GENERAL);
+	VkRenderingAttachmentInfo colorAttachment = vkinit::attachment_info(_drawImage.imageView, nullptr, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL);
 
 	VkRenderingInfo renderInfo = vkinit::rendering_info(_drawExtent, &colorAttachment, nullptr);
 	vkCmdBeginRendering(cmd, &renderInfo);
@@ -190,7 +199,7 @@ void VulkanEngine::draw_geometry(VkCommandBuffer cmd)
 void VulkanEngine::draw_geometry(VkCommandBuffer cmd)
 {
 	//begin a render pass  connected to our draw image
-	VkRenderingAttachmentInfo colorAttachment = vkinit::attachment_info(_drawImage.imageView, nullptr, VK_IMAGE_LAYOUT_GENERAL);
+	VkRenderingAttachmentInfo colorAttachment = vkinit::attachment_info(_drawImage.imageView, nullptr, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL);
 	VkRenderingAttachmentInfo depthAttachment = vkinit::depth_attachment_info(_depthImage.imageView, VK_IMAGE_LAYOUT_DEPTH_ATTACHMENT_OPTIMAL);
 
 	VkRenderingInfo renderInfo = vkinit::rendering_info(_drawExtent, &colorAttachment, &depthAttachment);
@@ -436,25 +445,25 @@ void VulkanEngine::init_imgui()
 	init_info.MinImageCount = 3;
 	init_info.ImageCount = 3;
 	init_info.UseDynamicRendering = true;
-	init_info.ColorAttachmentFormat = _swapchainImageFormat;
+
+	//dynamic rendering parameters for imgui to use
+	init_info.PipelineRenderingCreateInfo = { .sType = VK_STRUCTURE_TYPE_PIPELINE_RENDERING_CREATE_INFO };
+	init_info.PipelineRenderingCreateInfo.colorAttachmentCount = 1;
+	init_info.PipelineRenderingCreateInfo.pColorAttachmentFormats = &_swapchainImageFormat;
+
 
 	init_info.MSAASamples = VK_SAMPLE_COUNT_1_BIT;
 
-	ImGui_ImplVulkan_Init(&init_info, VK_NULL_HANDLE);
+	ImGui_ImplVulkan_Init(&init_info);
 
-	// execute a gpu command to upload imgui font textures
-	immediate_submit([&](VkCommandBuffer cmd) { ImGui_ImplVulkan_CreateFontsTexture(cmd); });
-
-	// clear font textures from cpu data
-	ImGui_ImplVulkan_DestroyFontUploadObjects();
+	ImGui_ImplVulkan_CreateFontsTexture();
 
 	// add the destroy the imgui created structures
 	_mainDeletionQueue.push_function([=]() {
-		vkDestroyDescriptorPool(_device, imguiPool, nullptr);
 		ImGui_ImplVulkan_Shutdown();
+		vkDestroyDescriptorPool(_device, imguiPool, nullptr);
 		});
 }
-
 void VulkanEngine::run()
 {
 	SDL_Event e;
@@ -492,7 +501,7 @@ void VulkanEngine::run()
 
 		// imgui new frame
 		ImGui_ImplVulkan_NewFrame();
-		ImGui_ImplSDL2_NewFrame(_window);
+		ImGui_ImplSDL2_NewFrame();
 
 		ImGui::NewFrame();
 
@@ -539,11 +548,11 @@ void VulkanEngine::init_vulkan()
 
 	SDL_Vulkan_CreateSurface(_window, _instance, &_surface);
 
-	VkPhysicalDeviceVulkan13Features features{};
+	VkPhysicalDeviceVulkan13Features features{.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_3_FEATURES};
 	features.dynamicRendering = true;
 	features.synchronization2 = true;
 
-	VkPhysicalDeviceVulkan12Features features12{};
+	VkPhysicalDeviceVulkan12Features features12{.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_2_FEATURES};	
 	features12.bufferDeviceAddress = true;
 	features12.descriptorIndexing = true;
 
@@ -801,7 +810,7 @@ void VulkanEngine::init_background_pipelines()
 	//destroy structures properly
 	vkDestroyShaderModule(_device, gradientShader, nullptr);
 	vkDestroyShaderModule(_device, skyShader, nullptr);
-	_mainDeletionQueue.push_function([&]() {
+	_mainDeletionQueue.push_function([=]() {
 		vkDestroyPipelineLayout(_device, _gradientPipelineLayout, nullptr);
 		vkDestroyPipeline(_device, sky.pipeline, nullptr);
 		vkDestroyPipeline(_device, gradient.pipeline, nullptr);
@@ -1114,6 +1123,12 @@ void VulkanEngine::init_descriptors()
 	drawImageWrite.pImageInfo = &imgInfo;
 
 	vkUpdateDescriptorSets(_device, 1, &drawImageWrite, 0, nullptr);
+
+	_mainDeletionQueue.push_function([&](){
+		globalDescriptorAllocator.destroy_pool(_device);
+
+		vkDestroyDescriptorSetLayout(_device,_drawImageDescriptorLayout,nullptr);
+	});
 }
 
 //> alloc_buffer
