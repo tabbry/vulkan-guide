@@ -175,3 +175,27 @@ https://vkguide.dev/docs/new_chapter_0/code_walkthrough/
 
 https://vkguide.dev/docs/new_chapter_1/vulkan_init_code/
 
+- include `#include "VkBootstrap.h"` in `vk_engine.cpp`.
+- The site links a tutorial in case someone wants to know in detail what bootstrap does.
+- add some properties and methods to `vk_engine.h` to store instance, device and debug utils.
+
+followed remaining steps...
+
+- After implementing `VulkanEngine::init_vulkan()` the guide asks to start the app to confirm that the selected features are supported. In my case it did!
+
+#### Cleaning up resources
+
+- `VkPhysicalDevice` cannot be destroyed.
+- After updating the `VulkanEngine::cleanup()` method, the guide says that running the app should not produce any errors. As expected, it didn't!
+
+
+#### Validation layer errors
+
+- For demonstration purposes the guide asks to use a wrong order in the cleanup function to provoke an error when closing the app. It did!
+
+# Open Questions
+
+- What is DynamicRendering? Why would I want to skip renderpasses/framebuffers?
+- What is new with `features.synchronization2`?
+- What is the benefit of GPU pointers without binding buffers?
+- What are bindless textures?
