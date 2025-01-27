@@ -19,14 +19,6 @@ When opening the rego, VS will ask to install all missing components.
 1. In Solution Exlporer select item `CMake Targets View`
 2. Select any project and choose `Set as Startup Item`
 
-# Troubleshooting
-
-## CMake Workspace not working
-
-1. Close Visual Studio
-1. Delete `.vs` folder
-1. Open Workspace
-
 # Personal Notes
 
 ## Introduction
@@ -143,3 +135,38 @@ https://vkguide.dev/docs/new_chapter_0/code_walkthrough/
 - Parameters for SDL are set in `vk_engine`
 - SDL is a C library; SDL objects have to be deleted manually (`VulkanEngine::cleanup`).
 - `VulkanEngine::run` in a nutshell so far: call `draw()` until the loop is stopped and not while it is suspended.
+
+## 1. Initializing Vulkan
+
+### Vulkan Initialization
+
+- Vulkan has a lot to setup, therefore we use `VkBootstrap`
+- Vulkan has no global state, `VkDevice`/`VkInstance` will be called in every call.
+
+#### `VkInstance`
+
+- enable validation layers
+- set instance extensions
+
+#### `VkPhysicalDevice`
+
+- query GPU properties
+- select GPU for the purpose
+
+#### `VkDevice`
+
+- enable only extensions which are needed.
+
+#### Swapchain
+
+- used for online-rendering
+- swapchains are not part of Vulkan core specs
+- recreate swapchain when window resizes
+- swapchain holds images and views, accessible by the OS
+- use 2/3 images for double/triple-buffering
+- select `VkPresentModeKHR` based on needs (latency, vsync, ...)
+
+### Vulkan Initialization Code
+
+https://vkguide.dev/docs/new_chapter_1/vulkan_init_code/
+
