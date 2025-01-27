@@ -1,5 +1,10 @@
 This is just the repo for the personal learning progress of the [vulkan-guide](https://vkguide.dev/).
 
+# Branching
+
+- "working chapters": `tabbry/chapter-N` (branched from `starting-point` -> `tabbry/starting-point`)
+- "solution": `all-chapters-2`
+
 # Prerequisites Visual Studio 2022
 
 When opening the rego, VS will ask to install all missing components.
