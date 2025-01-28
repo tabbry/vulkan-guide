@@ -193,6 +193,13 @@ followed remaining steps...
 
 - For demonstration purposes the guide asks to use a wrong order in the cleanup function to provoke an error when closing the app. It did!
 
+## Setting up Vulkan commands
+
+https://vkguide.dev/docs/new_chapter_1/vulkan_commands_code/
+
+- a lot of `VkCreateXXX` functions need the `sType` and `pNext` set.
+- Init vulkan structs with ` = {};`, which zeroes all values of the struct. (in a way defaulting).
+
 # Open Questions
 
 - What is DynamicRendering? Why would I want to skip renderpasses/framebuffers?

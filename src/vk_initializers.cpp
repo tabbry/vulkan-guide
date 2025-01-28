@@ -1,6 +1,7 @@
 ﻿#include <vk_initializers.h>
 
 //> init_cmd
+// first used for: https://vkguide.dev/docs/new_chapter_1/vulkan_commands_code/
 VkCommandPoolCreateInfo vkinit::command_pool_create_info(uint32_t queueFamilyIndex,
     VkCommandPoolCreateFlags flags /*= 0*/)
 {
@@ -12,7 +13,7 @@ VkCommandPoolCreateInfo vkinit::command_pool_create_info(uint32_t queueFamilyInd
     return info;
 }
 
-
+// first used for: https://vkguide.dev/docs/new_chapter_1/vulkan_commands_code/
 VkCommandBufferAllocateInfo vkinit::command_buffer_allocate_info(
     VkCommandPool pool, uint32_t count /*= 1*/)
 {
@@ -22,6 +23,10 @@ VkCommandBufferAllocateInfo vkinit::command_buffer_allocate_info(
 
     info.commandPool = pool;
     info.commandBufferCount = count;
+
+    // Can be PRIMARY or SECONDARY.
+    // SECONDARY might be used when multiple threads submit to a single buffer.
+    // As recommended by the guide, so far we always assumed PRIMARY.
     info.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
     return info;
 }

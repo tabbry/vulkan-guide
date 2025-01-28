@@ -50,12 +50,20 @@ void VulkanEngine::init()
 
 /// <summary>
 /// This method should cleanup all used resources. Optimally in oposite order, in which they were created.
+/// - destroys command pool: https://vkguide.dev/docs/new_chapter_1/vulkan_commands_code/
 /// - cleans up swapchain: https://vkguide.dev/docs/new_chapter_1/vulkan_init_code/
 /// - destroys SDL window
 /// </summary>
 void VulkanEngine::cleanup()
 {
     if (_isInitialized) {
+        //make sure the gpu has stopped doing its things
+        vkDeviceWaitIdle(_device);
+
+        for (int i = 0; i < FRAME_OVERLAP; i++) {
+            vkDestroyCommandPool(_device, _frames[i]._commandPool, nullptr);
+        }
+
         destroy_swapchain();
 
         vkDestroySurfaceKHR(_instance, _surface, nullptr);
@@ -113,6 +121,7 @@ void VulkanEngine::run()
 /// <summary>
 /// This method will use VkBootstrap to set the `VkInstance` and the debug messenger for the engine.
 /// https://vkguide.dev/docs/new_chapter_1/vulkan_init_code/
+/// inits graphics queue: https://vkguide.dev/docs/new_chapter_1/vulkan_commands_code/
 /// </summary>
 void VulkanEngine::init_vulkan()
 {
@@ -161,12 +170,31 @@ void VulkanEngine::init_vulkan()
     // Get the VkDevice handle used in the rest of a vulkan application
     _device = vkbDevice.device;
     _chosenGPU = physicalDevice.physical_device;
+
+    _graphicsQueue = vkbDevice.get_queue(vkb::QueueType::graphics).value();
+    _graphicsQueueFamily = vkbDevice.get_queue_index(vkb::QueueType::graphics).value();
 }
 
+/// <summary>
+/// - https://vkguide.dev/docs/new_chapter_1/vulkan_commands_code/
+/// </summary>
 void VulkanEngine::init_commands()
 {
-    //nothing yet
+    //create a command pool for commands submitted to the graphics queue.
+    // the flag VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT tells vulkan that the command buffers of this pool should be resettable.
+    VkCommandPoolCreateInfo commandPoolInfo = vkinit::command_pool_create_info(_graphicsQueueFamily, VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT);
+
+    for (int i = 0; i < FRAME_OVERLAP; i++) {
+
+        VK_CHECK(vkCreateCommandPool(_device, &commandPoolInfo, nullptr, &_frames[i]._commandPool));
+
+        // allocate the default command buffer that we will use for rendering
+        VkCommandBufferAllocateInfo cmdAllocInfo = vkinit::command_buffer_allocate_info(_frames[i]._commandPool, 1);
+
+        VK_CHECK(vkAllocateCommandBuffers(_device, &cmdAllocInfo, &_frames[i]._mainCommandBuffer));
+    }
 }
+
 void VulkanEngine::init_sync_structures()
 {
     //nothing yet
