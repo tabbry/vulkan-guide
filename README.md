@@ -193,12 +193,47 @@ followed remaining steps...
 
 - For demonstration purposes the guide asks to use a wrong order in the cleanup function to provoke an error when closing the app. It did!
 
-## Setting up Vulkan commands
+### Setting up Vulkan commands
 
 https://vkguide.dev/docs/new_chapter_1/vulkan_commands_code/
 
 - a lot of `VkCreateXXX` functions need the `sType` and `pNext` set.
 - Init vulkan structs with ` = {};`, which zeroes all values of the struct. (in a way defaulting).
+
+### Rendering Loop
+
+https://vkguide.dev/docs/new_chapter_1/vulkan_mainloop/
+
+#### Synchronization
+
+- Commands once sent to GPU, will be executed in any order, unless specifically controlled with fences and semaphores.
+
+##### `VkFence`
+
+- Used for GPU to CPU communication
+- `vkQueueSubmit` allows for *optional* fence parameter.
+- `VkWaitForFences` will let the CPU wait until the commands are finished.
+- for each `FrameData` a fence will be used. 
+
+##### `VkSemaphore`
+
+- Used for controlling order of executed GPU commands.
+- semaphores can be *signaled* and *waited* upon.
+
+The guide gives an example on how to force the GPU to run 3 commands linearly.
+
+### Render Loop
+
+- for drawing an image to the screen, a image draw request has to be made to the OS.
+
+### Image Layouts
+
+- image layout is the vulkan abstraction of GPU image formats.
+- pipeline barriers also do transitions of image layouts.
+- image layout transitions are very vendor specific. validation layers should be used!
+- before `VkCmdDraw` can be called on an image from the swapchain, it has to be transitioned into a writeable image.
+- For screen output yet another transition is necessary.
+- For Vulkan 1.3 using dynamic rendering, those transitions have to be made manually.
 
 # Open Questions
 
