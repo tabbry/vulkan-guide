@@ -7,10 +7,26 @@
 
 
 // The data we need for each N (FRAME_OVERLAP) frame from the N-buffering.
-// - https://vkguide.dev/docs/new_chapter_1/vulkan_commands_code/
+// - command pool and buffer: https://vkguide.dev/docs/new_chapter_1/vulkan_commands_code/
+// - semaphores and fence: https://vkguide.dev/docs/new_chapter_1/vulkan_mainloop_code/
 struct FrameData {
 	VkCommandPool _commandPool;
 	VkCommandBuffer _mainCommandBuffer;
+
+	/// <summary>
+	/// The semaphore for which the render commands wait on the swapchain image request.
+	/// </summary>
+	VkSemaphore _swapchainSemaphore;
+
+	/// <summary>
+	/// The semaphore to control presenting the image to the OS once the drawing finishes.
+	/// </summary>
+	VkSemaphore _renderSemaphore;
+
+	/// <summary>
+	/// The fence that will wait for the draw commands of a given frame to be finished.
+	/// </summary>
+	VkFence _renderFence;
 };
 
 constexpr unsigned int FRAME_OVERLAP = 2;

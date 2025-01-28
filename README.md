@@ -222,11 +222,11 @@ https://vkguide.dev/docs/new_chapter_1/vulkan_mainloop/
 
 The guide gives an example on how to force the GPU to run 3 commands linearly.
 
-### Render Loop
+#### Render Loop
 
 - for drawing an image to the screen, a image draw request has to be made to the OS.
 
-### Image Layouts
+#### Image Layouts
 
 - image layout is the vulkan abstraction of GPU image formats.
 - pipeline barriers also do transitions of image layouts.
@@ -234,6 +234,26 @@ The guide gives an example on how to force the GPU to run 3 commands linearly.
 - before `VkCmdDraw` can be called on an image from the swapchain, it has to be transitioned into a writeable image.
 - For screen output yet another transition is necessary.
 - For Vulkan 1.3 using dynamic rendering, those transitions have to be made manually.
+
+### Mainloop Code
+
+- The guide asks to extend `FrameData` with semaphores and a fence.
+- The guide gives a summary of the inserted semaphores and the fence.
+- short summary of `vkinit::fence_create_info` and `vkinit::semaphore_create_info`
+- code and explanation of `VulkanEngine::init_sync_structures`
+
+#### Draw loop
+
+- `vkWaitForFences` with a timeout of `0` (nano-seconds) can be used to check if a fence still is used.
+- The guide links to a Khronos resource about use cases of memory barriers as the presented approach is very generic, but also inefficient.
+- `VK_IMAGE_LAYOUT_GENERAL` is not very efficient but generic. Also good when writing from a compute shader.
+- The guide links to more resources about image layouts.
+- later the draw command clears the color which slowly oscilates through time.
+- later the guide gives introduction about the `submit_info` structs and commands.
+- then the semaphores and the fence are prepared in the submit info for the command buffer.
+- then the swapchain is used to present the result to the screen.
+- finally destroying the fence and the semaphores is made part of the clenaup
+- the guide asks to start the app and confirm that the window is changing color as expecetd and that no validation errors accur. Worked as expected!
 
 # Open Questions
 

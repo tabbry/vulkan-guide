@@ -33,6 +33,12 @@ VkCommandBufferAllocateInfo vkinit::command_buffer_allocate_info(
 //< init_cmd
 // 
 //> init_cmd_draw
+
+/// <summary>
+/// https://vkguide.dev/docs/new_chapter_1/vulkan_mainloop_code/
+/// </summary>
+/// <param name="flags"></param>
+/// <returns></returns>
 VkCommandBufferBeginInfo vkinit::command_buffer_begin_info(VkCommandBufferUsageFlags flags /*= 0*/)
 {
     VkCommandBufferBeginInfo info = {};
@@ -46,6 +52,12 @@ VkCommandBufferBeginInfo vkinit::command_buffer_begin_info(VkCommandBufferUsageF
 //< init_cmd_draw
 
 //> init_sync
+
+/// <summary>
+/// https://vkguide.dev/docs/new_chapter_1/vulkan_mainloop_code/
+/// </summary>
+/// <param name="flags"></param>
+/// <returns></returns>
 VkFenceCreateInfo vkinit::fence_create_info(VkFenceCreateFlags flags /*= 0*/)
 {
     VkFenceCreateInfo info = {};
@@ -57,6 +69,11 @@ VkFenceCreateInfo vkinit::fence_create_info(VkFenceCreateFlags flags /*= 0*/)
     return info;
 }
 
+/// <summary>
+/// https://vkguide.dev/docs/new_chapter_1/vulkan_mainloop_code/
+/// </summary>
+/// <param name="flags"></param>
+/// <returns></returns>
 VkSemaphoreCreateInfo vkinit::semaphore_create_info(VkSemaphoreCreateFlags flags /*= 0*/)
 {
     VkSemaphoreCreateInfo info = {};
@@ -68,6 +85,13 @@ VkSemaphoreCreateInfo vkinit::semaphore_create_info(VkSemaphoreCreateFlags flags
 //< init_sync
 
 //> init_submit
+
+/// <summary>
+/// https://vkguide.dev/docs/new_chapter_1/vulkan_mainloop_code/
+/// </summary>
+/// <param name="stageMask"></param>
+/// <param name="semaphore"></param>
+/// <returns></returns>
 VkSemaphoreSubmitInfo vkinit::semaphore_submit_info(VkPipelineStageFlags2 stageMask, VkSemaphore semaphore)
 {
 	VkSemaphoreSubmitInfo submitInfo{};
@@ -76,11 +100,18 @@ VkSemaphoreSubmitInfo vkinit::semaphore_submit_info(VkPipelineStageFlags2 stageM
 	submitInfo.semaphore = semaphore;
 	submitInfo.stageMask = stageMask;
 	submitInfo.deviceIndex = 0;
+
+    // value is used for timeline semaphores, which are a special type of semaphore where they work through a counter intead of a binary state. We will also not be using them, so we can default it to 1
 	submitInfo.value = 1;
 
 	return submitInfo;
 }
 
+/// <summary>
+/// https://vkguide.dev/docs/new_chapter_1/vulkan_mainloop_code/
+/// </summary>
+/// <param name="cmd"></param>
+/// <returns></returns>
 VkCommandBufferSubmitInfo vkinit::command_buffer_submit_info(VkCommandBuffer cmd)
 {
 	VkCommandBufferSubmitInfo info{};
@@ -92,6 +123,13 @@ VkCommandBufferSubmitInfo vkinit::command_buffer_submit_info(VkCommandBuffer cmd
 	return info;
 }
 
+/// <summary>
+/// https://vkguide.dev/docs/new_chapter_1/vulkan_mainloop_code/
+/// </summary>
+/// <param name="cmd"></param>
+/// <param name="signalSemaphoreInfo"></param>
+/// <param name="waitSemaphoreInfo"></param>
+/// <returns></returns>
 VkSubmitInfo2 vkinit::submit_info(VkCommandBufferSubmitInfo* cmd, VkSemaphoreSubmitInfo* signalSemaphoreInfo,
     VkSemaphoreSubmitInfo* waitSemaphoreInfo)
 {
@@ -182,9 +220,17 @@ VkRenderingInfo vkinit::rendering_info(VkExtent2D renderExtent, VkRenderingAttac
 }
 //< render_info
 //> subresource
+
+/// <summary>
+/// https://vkguide.dev/docs/new_chapter_1/vulkan_mainloop_code/
+/// </summary>
+/// <param name="aspectMask"></param>
+/// <returns></returns>
 VkImageSubresourceRange vkinit::image_subresource_range(VkImageAspectFlags aspectMask)
 {
     VkImageSubresourceRange subImage {};
+
+    // The aspectMask will be either `VK_IMAGE_ASPECT_COLOR_BIT` or `VK_IMAGE_ASPECT_DEPTH_BIT`.
     subImage.aspectMask = aspectMask;
     subImage.baseMipLevel = 0;
     subImage.levelCount = VK_REMAINING_MIP_LEVELS;
