@@ -1,6 +1,8 @@
 ﻿//> includes
 #include "vk_engine.h"
 
+#include <fmt/core.h>
+
 #include <SDL.h>
 #include <SDL_vulkan.h>
 
@@ -262,6 +264,9 @@ void VulkanEngine::run()
     SDL_Event e;
     bool bQuit = false;
 
+    auto lastTime = std::chrono::high_resolution_clock::now();
+    auto lastFrameNumber{ _frameNumber };
+
     // main loop
     while (!bQuit) {
         // Handle events on queue
@@ -288,6 +293,18 @@ void VulkanEngine::run()
         }
 
         draw();
+
+        auto currentTime = std::chrono::high_resolution_clock::now();
+        auto elapsed = std::chrono::duration<double>(currentTime - lastTime).count();
+
+        if (elapsed >= 1.0) {
+            auto fps{ (_frameNumber - lastFrameNumber) / elapsed };
+            
+            fmt::println("FPS: {}", fps);
+
+            lastFrameNumber = _frameNumber;
+            lastTime = currentTime;
+        }
     }
 }
 
@@ -415,6 +432,7 @@ void VulkanEngine::create_swapchain(uint32_t width, uint32_t height)
         //.use_default_format_selection()
         .set_desired_format(VkSurfaceFormatKHR{ .format = _swapchainImageFormat, .colorSpace = VK_COLOR_SPACE_SRGB_NONLINEAR_KHR })
         //use vsync present mode
+        //.set_desired_present_mode(VK_PRESENT_MODE_IMMEDIATE_KHR) // unlimited
         .set_desired_present_mode(VK_PRESENT_MODE_FIFO_KHR) // This creates a hard VSync.
         .set_desired_extent(width, height)
         .add_image_usage_flags(VK_IMAGE_USAGE_TRANSFER_DST_BIT)
