@@ -288,6 +288,36 @@ https://vkguide.dev/docs/new_chapter_2/vulkan_new_rendering/
 - `VkCmdCopyImage` is faster, but restricted to format and dimensions.
 - `VkCmdBlitImage` slower, but less restrictiond on format and dimensions.
 
+### Vulkan Shaders
+
+https://vkguide.dev/docs/new_chapter_2/vulkan_shader_drawing/
+
+#### `VkShaderModule`
+
+- in Vulkan shaders have to be pre-compiled into a *SpirV* file.
+- CMake is configured to do this automatically
+
+#### Descriptor Sets
+
+- Data is given to shaders with `VkDescriptorSet` references.
+- They are allocated in `VkDescriptorPool`.
+- Data is updated calling `vkUpdateDescriptorSets`.
+- Before it is available, it first has to be bound `VkBindDescriptorSets`
+
+#### Push constants
+
+- a few bytes of information can be pushed directly together with the graphics command.
+- It's good for per-object data
+
+#### The Compute Pipeline
+
+1. create a compute pipeline layout
+1. hook single shader module
+1. execute by calling `VkCmdBindPipeline` and then `VkCmdDispatch`
+
+- `VkCmdDispatch` expects a number of work groups in a X\*Y\*Z fashion
+- In the shader the variables `gl_LocalInvocationID`, `gl_GlobalIncovationID` and `gl_WorkGroupID` give identity information about the process and can be used to identify the pixel.
+
 # Open Questions
 
 - What is DynamicRendering? Why would I want to skip renderpasses/framebuffers?
