@@ -19,6 +19,10 @@ When opening the rego, VS will ask to install all missing components.
 2. Install [Vulkan SDK ](https://vulkan.lunarg.com/sdk/home) (restart may be required after installation)
 3. Install [CMake](https://cmake.org/download/)
 
+### Optional installations
+
+- GLSL language Integration (VS Extension)
+
 ## Building
 
 1. In Solution Exlporer select item `CMake Targets View`
@@ -317,6 +321,23 @@ https://vkguide.dev/docs/new_chapter_2/vulkan_shader_drawing/
 
 - `VkCmdDispatch` expects a number of work groups in a X\*Y\*Z fashion
 - In the shader the variables `gl_LocalInvocationID`, `gl_GlobalIncovationID` and `gl_WorkGroupID` give identity information about the process and can be used to identify the pixel.
+
+### Vulkan Shaders - Code
+
+https://vkguide.dev/docs/new_chapter_2/vulkan_shader_code/
+
+#### Setting up the descriptor layout
+
+- struct `DescriptorLayoutBuilder` is defined in `vk_descriptor.h/cpp`
+- For the compute shader in question, the binding `0` is used (as in the shader defined) and the type will be `VK_DESCRIPTOR_TYPE_STORAGE_IMAGE`
+
+#### Descriptor Allocator
+
+- resetting `VkDescriptorPool`s is a rather quick process.
+
+#### Initializing the layout and descriptors
+
+
 
 # Open Questions
 

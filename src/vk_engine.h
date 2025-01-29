@@ -4,6 +4,7 @@
 #pragma once
 
 #include <vk_types.h>
+#include <vk_descriptors.h>
 
 /// <summary>
 /// https://vkguide.dev/docs/new_chapter_2/vulkan_new_rendering/
@@ -84,11 +85,19 @@ public:
 	// Dimensions for the draw image.
 	VkExtent2D _drawExtent;
 
+	DescriptorAllocator globalDescriptorAllocator;
+
+	VkDescriptorSet _drawImageDescriptors;
+	VkDescriptorSetLayout _drawImageDescriptorLayout;
+
 	FrameData _frames[FRAME_OVERLAP];
 	FrameData& get_current_frame() { return _frames[_frameNumber % FRAME_OVERLAP]; };
 
 	VkQueue _graphicsQueue;
 	uint32_t _graphicsQueueFamily;
+
+	VkPipeline _gradientPipeline;
+	VkPipelineLayout _gradientPipelineLayout;
 
 	DeletionQueue _mainDeletionQueue;
 
@@ -115,6 +124,10 @@ private:
 	void init_swapchain();
 	void init_commands();
 	void init_sync_structures();
+	void init_descriptors();
+
+	void init_pipelines();
+	void init_background_pipelines();
 
 	void draw_background(VkCommandBuffer cmd);
 
