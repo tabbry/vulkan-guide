@@ -7,21 +7,41 @@ layout (local_size_x = 16, local_size_y = 16) in;
 //descriptor bindings for the pipeline
 layout(rgba16f,set = 0, binding = 0) uniform image2D image;
 
+const int maxIterations = 1000;
+const int resolution = 3;
+
+int mandelbrotDivergence(vec2 c){
+    vec2 z = vec2(0);
+
+    for(int i = 0; i < maxIterations; i++){
+        z = vec2(z.x * z.x - z.y * z.y, 2 * z.x * z.y) + c;
+        if(abs(z.x) > 2.0) return i;
+    }
+    return maxIterations;
+}
 
 void main() 
 {
     ivec2 texelCoord = ivec2(gl_GlobalInvocationID.xy);
 	ivec2 size = imageSize(image);
+    float scale = max(size.x, size.y);
+    float pixelSize = 1 / scale;
+    vec2 c = vec2(-2, -.6) + texelCoord * 3 * pixelSize;
+    float subPixelOffset = pixelSize / float(resolution);
 
     if(texelCoord.x < size.x && texelCoord.y < size.y)
     {
-        vec4 color = vec4(0.0, 0.0, 0.0, 1.0);
-
-        if(gl_LocalInvocationID.x != 0 && gl_LocalInvocationID.y != 0)
-        {
-            color.x = float(texelCoord.x)/(size.x);
-            color.y = float(texelCoord.y)/(size.y);	
+        int divergence = 0;
+        for(int rx = 0; rx < resolution; rx++){
+            for(int ry = 0; ry < resolution; ry++){
+                vec2 subC = vec2(0.5 * subPixelOffset) + vec2(rx * subPixelOffset, ry * subPixelOffset);
+                divergence += mandelbrotDivergence(c);
+            }
         }
+
+        float value = divergence / float(maxIterations * resolution * resolution);
+
+        vec4 color = vec4(vec3(value), 1.0);
     
         imageStore(image, texelCoord, color);
     }
