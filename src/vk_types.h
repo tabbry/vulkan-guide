@@ -29,3 +29,15 @@
             abort();                                                    \
         }                                                               \
     } while (0)
+
+/// <summary>
+/// https://vkguide.dev/docs/new_chapter_2/vulkan_new_rendering/
+/// </summary>
+struct AllocatedImage {
+    VkImage image;
+    VkImageView imageView;
+    VmaAllocation allocation;
+    VkExtent3D imageExtent;
+    VkFormat imageFormat;
+};
+

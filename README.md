@@ -255,6 +255,39 @@ The guide gives an example on how to force the GPU to run 3 commands linearly.
 - finally destroying the fence and the semaphores is made part of the clenaup
 - the guide asks to start the app and confirm that the window is changing color as expecetd and that no validation errors accur. Worked as expected!
 
+## Drawing with Compute
+
+### Improving the render loop
+
+https://vkguide.dev/docs/new_chapter_2/vulkan_new_rendering/
+
+#### Deletion queue
+
+- we don't want to delete all the stuff in the cleanup, therefore we keep everything organized in a deletion queue.
+- The guide shows code for defining the `DeletionQueue` struct.
+- `FrameData` and `VulkanEngine` receive a deletion queue, which is used in `draw` and `cleanup`.
+
+#### Memory Allocation
+
+- VMA removes a lot of boilerplate.
+- `VmaAllocator` is added to `VulkanEngine` and initialized in `init_vulkan`.
+
+#### New draw loop
+
+- The guide lists few reasons, why rendering directly to the swapchain is not recommended.
+- instead rendering is done to an image with full format control and the copied to the swapchain.
+
+#### Vulkan Images
+
+- creating `AllocatedImage`
+- The guide explains the "upload heap" and why to use `GPU_ONLY` for the draw image.
+
+#### New draw loop
+
+- There are two ways for copying images `VkCmdCopyImage` or `VkCmdBlitImage`.
+- `VkCmdCopyImage` is faster, but restricted to format and dimensions.
+- `VkCmdBlitImage` slower, but less restrictiond on format and dimensions.
+
 # Open Questions
 
 - What is DynamicRendering? Why would I want to skip renderpasses/framebuffers?

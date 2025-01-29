@@ -312,6 +312,14 @@ VkDescriptorBufferInfo vkinit::buffer_info(VkBuffer buffer, VkDeviceSize offset,
 }
 
 //> image_set
+
+/// <summary>
+/// https://vkguide.dev/docs/new_chapter_2/vulkan_new_rendering/
+/// </summary>
+/// <param name="format"></param>
+/// <param name="usageFlags"></param>
+/// <param name="extent"></param>
+/// <returns></returns>
 VkImageCreateInfo vkinit::image_create_info(VkFormat format, VkImageUsageFlags usageFlags, VkExtent3D extent)
 {
     VkImageCreateInfo info = {};
@@ -330,12 +338,20 @@ VkImageCreateInfo vkinit::image_create_info(VkFormat format, VkImageUsageFlags u
     info.samples = VK_SAMPLE_COUNT_1_BIT;
 
     //optimal tiling, which means the image is stored on the best gpu format
+    // LINEAR would be needed if CPU readback is desired.
     info.tiling = VK_IMAGE_TILING_OPTIMAL;
     info.usage = usageFlags;
 
     return info;
 }
 
+/// <summary>
+/// https://vkguide.dev/docs/new_chapter_2/vulkan_new_rendering/
+/// </summary>
+/// <param name="format"></param>
+/// <param name="image"></param>
+/// <param name="aspectFlags"></param>
+/// <returns></returns>
 VkImageViewCreateInfo vkinit::imageview_create_info(VkFormat format, VkImage image, VkImageAspectFlags aspectFlags)
 {
     // build a image-view for the depth image to use for rendering

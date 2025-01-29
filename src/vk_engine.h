@@ -5,10 +5,32 @@
 
 #include <vk_types.h>
 
+/// <summary>
+/// https://vkguide.dev/docs/new_chapter_2/vulkan_new_rendering/
+/// </summary>
+struct DeletionQueue
+{
+	std::deque<std::function<void()>> deletors;
+
+	void push_function(std::function<void()>&& function) {
+		deletors.push_back(function);
+	}
+
+	void flush() {
+		// reverse iterate the deletion queue to execute all the functions
+		for (auto it = deletors.rbegin(); it != deletors.rend(); it++) {
+			(*it)(); //call functors
+		}
+
+		deletors.clear();
+	}
+};
+
 
 // The data we need for each N (FRAME_OVERLAP) frame from the N-buffering.
 // - command pool and buffer: https://vkguide.dev/docs/new_chapter_1/vulkan_commands_code/
 // - semaphores and fence: https://vkguide.dev/docs/new_chapter_1/vulkan_mainloop_code/
+// - deletion queue: https://vkguide.dev/docs/new_chapter_2/vulkan_new_rendering/
 struct FrameData {
 	VkCommandPool _commandPool;
 	VkCommandBuffer _mainCommandBuffer;
@@ -27,6 +49,11 @@ struct FrameData {
 	/// The fence that will wait for the draw commands of a given frame to be finished.
 	/// </summary>
 	VkFence _renderFence;
+
+	/// <summary>
+	/// The deletion queue for objects which are used within one frame.
+	/// </summary>
+	DeletionQueue _deletionQueue;
 };
 
 constexpr unsigned int FRAME_OVERLAP = 2;
@@ -52,11 +79,20 @@ public:
 	std::vector<VkImageView> _swapchainImageViews;
 	VkExtent2D _swapchainExtent;
 
+	// The draw image acts as a canvas, so that we don't have to draw directly on the swapchain image.
+	AllocatedImage _drawImage;
+	// Dimensions for the draw image.
+	VkExtent2D _drawExtent;
+
 	FrameData _frames[FRAME_OVERLAP];
 	FrameData& get_current_frame() { return _frames[_frameNumber % FRAME_OVERLAP]; };
 
 	VkQueue _graphicsQueue;
 	uint32_t _graphicsQueueFamily;
+
+	DeletionQueue _mainDeletionQueue;
+
+	VmaAllocator _allocator;
 
 	struct SDL_Window* _window{ nullptr };
 
@@ -79,6 +115,8 @@ private:
 	void init_swapchain();
 	void init_commands();
 	void init_sync_structures();
+
+	void draw_background(VkCommandBuffer cmd);
 
 	void create_swapchain(uint32_t width, uint32_t height);
 	void destroy_swapchain();
