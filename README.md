@@ -337,6 +337,18 @@ https://vkguide.dev/docs/new_chapter_2/vulkan_shader_code/
 
 #### Initializing the layout and descriptors
 
+### Setting up IMGUI
+
+https://vkguide.dev/docs/new_chapter_2/vulkan_imgui_setup/
+
+#### Immediate GPU commands
+
+- imgui requires some commands outside of the normal draw loop.
+- "Immediate Submit" structures are created.
+- The `immediate_submit` executed a `VkCommandBuffer` command immediately.
+
+#### IMGUI Setup
+
 
 
 # Open Questions
