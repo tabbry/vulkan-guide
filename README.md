@@ -349,6 +349,8 @@ https://vkguide.dev/docs/new_chapter_2/vulkan_imgui_setup/
 
 #### IMGUI Setup
 
+### Push Constants and new shaders
+
 
 
 # Open Questions

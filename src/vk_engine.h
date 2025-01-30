@@ -7,6 +7,28 @@
 #include <vk_descriptors.h>
 
 /// <summary>
+/// https://vkguide.dev/docs/new_chapter_2/vulkan_pushconstants/
+/// </summary>
+struct ComputePushConstants {
+	glm::vec4 data1;
+	glm::vec4 data2;
+	glm::vec4 data3;
+	glm::vec4 data4;
+};
+
+/// <summary>
+/// https://vkguide.dev/docs/new_chapter_2/vulkan_pushconstants/
+/// </summary>
+struct ComputeEffect {
+	const char* name;
+
+	VkPipeline pipeline;
+	VkPipelineLayout layout;
+
+	ComputePushConstants data;
+};
+
+/// <summary>
 /// https://vkguide.dev/docs/new_chapter_2/vulkan_new_rendering/
 /// </summary>
 struct DeletionQueue
@@ -107,6 +129,9 @@ public:
 	VkFence _immFence;
 	VkCommandBuffer _immCommandBuffer;
 	VkCommandPool _immCommandPool;
+
+	std::vector<ComputeEffect> backgroundEffects;
+	int currentBackgroundEffect{ 0 };
 
 	struct SDL_Window* _window{ nullptr };
 
