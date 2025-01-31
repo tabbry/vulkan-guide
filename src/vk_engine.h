@@ -88,7 +88,8 @@ public:
 	bool _isInitialized{ false };
 	int _frameNumber {0};
 	bool stop_rendering{ false };
-	VkExtent2D _windowExtent{ 1700 , 900 };
+	VkExtent2D _windowExtent{ 2560 , 1440 };
+	bool resize_requested{ false };
 
 	VkInstance _instance;
 	VkDebugUtilsMessengerEXT _debug_messenger;
@@ -108,6 +109,7 @@ public:
 	AllocatedImage _depthImage;
 	// Dimensions for the draw image.
 	VkExtent2D _drawExtent;
+	float renderScale = 1.f;
 
 	DescriptorAllocator globalDescriptorAllocator;
 
@@ -186,6 +188,7 @@ private:
 
 	void create_swapchain(uint32_t width, uint32_t height);
 	void destroy_swapchain();
+	void resize_swapchain();
 
 	/// <summary>
 	/// 

@@ -436,9 +436,15 @@ The guide links a [benchmark](https://github.com/sebbbi/perftest) of accessing b
 
 https://vkguide.dev/docs/new_chapter_3/blending/
 
-### Blending in the pipeline
+#### Blending in the pipeline
 
 - in context of blending, source is the pixel to render and destination is the current pixel value of its position.
+
+### Window Resizing
+
+https://vkguide.dev/docs/new_chapter_3/resizing_window/
+
+- instead of reallocating all the images, the guide recommends to adjust the sacling of the rendering.
 
 # Open Questions
 
