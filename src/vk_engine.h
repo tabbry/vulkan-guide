@@ -133,6 +133,9 @@ public:
 	std::vector<ComputeEffect> backgroundEffects;
 	int currentBackgroundEffect{ 0 };
 
+	VkPipelineLayout _trianglePipelineLayout;
+	VkPipeline _trianglePipeline;
+
 	struct SDL_Window* _window{ nullptr };
 
 	static VulkanEngine& Get();
@@ -147,6 +150,8 @@ public:
 	void draw();
 
 	void draw_imgui(VkCommandBuffer cmd, VkImageView targetImageView);
+
+	void draw_geometry(VkCommandBuffer cmd);
 
 	//run main loop
 	void run();
@@ -166,6 +171,7 @@ private:
 
 	void init_pipelines();
 	void init_background_pipelines();
+	void init_triangle_pipeline();
 
 	void init_imgui();
 

@@ -351,7 +351,46 @@ https://vkguide.dev/docs/new_chapter_2/vulkan_imgui_setup/
 
 ### Push Constants and new shaders
 
+## 3. Graphics Pipelines
 
+### The graphics pipeline
+
+https://vkguide.dev/docs/new_chapter_3/render_pipeline/
+
+#### The render pipeline
+
+Simplified render pipeline
+
+```
+Data -> Vertex Shader -> Rasterization -> Fragment Shader -> Render Output
+```
+
+- **Fragment Shader** and **Render Output** are **fixed** stages
+- **Data**: all inputs: vertices, textures, material parameters...
+- **Vertex Shader**: transform vertices for rasterizer
+- **Fragment Shader**: calculate color for all pixels
+
+### Setting up render pipeline
+
+https://vkguide.dev/docs/new_chapter_3/building_pipeline/
+
+#### `VkGraphicsPipelineCreateInfo`
+
+- The guide links to page with detailed info about [`VkGraphicsPipelineCreateInfo`](https://registry.khronos.org/vulkan/specs/1.3-extensions/html/chap10.html#VkGraphicsPipelineCreateInfo)
+
+- `VkPipelineVertexInputStateCreateInfo`: config vertex info. Vertex pulling possible!
+- `VkPipelineInputAssemblyStateCreateInfo`: what type of geometry is drawn.
+- `VkPipelineTessellationStateCreateInfo`: fixed tesselation, ignore for now.
+- `VkPipelineViewportStateCreateInfo`: viewport info for the pipeline, ignore for dynamic.
+- `VkPipelineRasterizationStateCreateInfo`: depth bias, wireframe/solid, draw/skip backfaces
+- `VkPipelineMultisampleStateCreateInfo`: Anti-Aliasing, skipped for now.
+- `VkPipelineDepthStencilStateCreateInfo`: depth testing and stencil
+- `VkPipelineColorBlendStateCreateInfo`: color blending = transparency.
+- `VkPipelineDynamicStateCreateInfo`: 
+	- pipeline configs are usually hardcoded, every config needs different pipeline
+	- building pipelines is expensive
+	- some states can be set to dynamic, and can be modified with commands
+	- which states are dynamic depends on the device
 
 # Open Questions
 
