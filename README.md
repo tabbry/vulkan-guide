@@ -432,6 +432,14 @@ The guide links a [benchmark](https://github.com/sebbbi/perftest) of accessing b
 
 - `std::optional<>` allows a value to be errored/null.
 
+### Blending
+
+https://vkguide.dev/docs/new_chapter_3/blending/
+
+### Blending in the pipeline
+
+- in context of blending, source is the pixel to render and destination is the current pixel value of its position.
+
 # Open Questions
 
 - What is DynamicRendering? Why would I want to skip renderpasses/framebuffers?

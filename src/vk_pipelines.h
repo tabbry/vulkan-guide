@@ -66,4 +66,7 @@ public:
     /// Disables depth test by modifying the values for _depthStencil.
     /// </summary>
     void disable_depthtest();
+
+    void enable_blending_additive();
+    void enable_blending_alphablend();
 };
