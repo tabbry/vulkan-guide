@@ -392,9 +392,48 @@ https://vkguide.dev/docs/new_chapter_3/building_pipeline/
 	- some states can be set to dynamic, and can be modified with commands
 	- which states are dynamic depends on the device
 
+### Mesh Buffers
+
+- loading vertices from big gpu buffers gives performance and flexibility
+
+#### Vulkan Buffers
+
+- buffers provide general purpose memory, which don't need samplers.
+- **Uniform Buffers (UBO)**:
+	- read-only
+	- small size (min 16 kB)
+	- preload possible
+	- good for material and global scene config
+- **Storage Buffers (SSBO)**:
+	- fully generic read-write buffers 
+	- big size (min 128MB up to 4Gb)
+	- in general can be used for anything.
+
+The guide links a [benchmark](https://github.com/sebbbi/perftest) of accessing buffers.
+
+- Descriptors can be used as dynamic buffer.
+- A Descriptor can be used for multiple draw calls.
+- This works well with uniform buffers.
+- For Storage buffers, device-address is recommended.
+
+#### Buffer Device Adress
+
+- Accessing Buffer by the Buffer Device Address is possible with Vulkan 1.3
+- Accessing a SSBO using the Buffer Device Address is faster than with Descriptor Sets.
+- Pointer math can be applied to Buffer Device Addresses
+
+#### Creating Buffers
+
+- a `Span` is a pointer plus size which can easily be converted from C-style arrays or `std::vector` without having to perform a copy.
+
+#### Drawing a Mesh
+
+
+
 # Open Questions
 
 - What is DynamicRendering? Why would I want to skip renderpasses/framebuffers?
 - What is new with `features.synchronization2`?
 - What is the benefit of GPU pointers without binding buffers?
 - What are bindless textures?
+- What is a dynamic buffer?
