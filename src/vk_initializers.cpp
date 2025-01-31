@@ -194,8 +194,12 @@ VkRenderingAttachmentInfo vkinit::depth_attachment_info(
 
     depthAttachment.imageView = view;
     depthAttachment.imageLayout = layout;
+
+    // As for now are not redrawing on the depth image, we assume that we always clear it.
     depthAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
     depthAttachment.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
+
+    // Since the projection matrix is configured in such a way, that the far is 0 and near is 1, clear depth with 0;
     depthAttachment.clearValue.depthStencil.depth = 0.f;
 
     return depthAttachment;

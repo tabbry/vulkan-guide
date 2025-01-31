@@ -5,6 +5,7 @@
 
 #include <vk_types.h>
 #include <vk_descriptors.h>
+#include <vk_loader.h>
 
 /// <summary>
 /// https://vkguide.dev/docs/new_chapter_2/vulkan_pushconstants/
@@ -104,6 +105,7 @@ public:
 
 	// The draw image acts as a canvas, so that we don't have to draw directly on the swapchain image.
 	AllocatedImage _drawImage;
+	AllocatedImage _depthImage;
 	// Dimensions for the draw image.
 	VkExtent2D _drawExtent;
 
@@ -141,6 +143,8 @@ public:
 
 	GPUMeshBuffers rectangle;
 
+	std::vector<std::shared_ptr<MeshAsset>> testMeshes;
+
 	struct SDL_Window* _window{ nullptr };
 
 	static VulkanEngine& Get();
@@ -166,6 +170,7 @@ public:
 	/// </summary>
 	/// <param name="function"></param>
 	void immediate_submit(std::function<void(VkCommandBuffer cmd)>&& function);
+	GPUMeshBuffers uploadMesh(std::span<uint32_t> indices, std::span<Vertex> vertices);
 
 private:
 	void init_vulkan();
@@ -198,6 +203,4 @@ private:
 	AllocatedBuffer create_buffer(size_t allocSize, VkBufferUsageFlags usage, VmaMemoryUsage memoryUsage);
 
 	void destroy_buffer(const AllocatedBuffer& buffer);
-
-	GPUMeshBuffers uploadMesh(std::span<uint32_t> indices, std::span<Vertex> vertices);
 };

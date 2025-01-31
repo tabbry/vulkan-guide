@@ -428,7 +428,9 @@ The guide links a [benchmark](https://github.com/sebbbi/perftest) of accessing b
 
 #### Drawing a Mesh
 
+### Mesh Loading
 
+- `std::optional<>` allows a value to be errored/null.
 
 # Open Questions
 
@@ -437,3 +439,4 @@ The guide links a [benchmark](https://github.com/sebbbi/perftest) of accessing b
 - What is the benefit of GPU pointers without binding buffers?
 - What are bindless textures?
 - What is a dynamic buffer?
+- What is a forward declaration?
