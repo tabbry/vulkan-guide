@@ -46,3 +46,61 @@ struct DescriptorAllocator {
 
     VkDescriptorSet allocate(VkDevice device, VkDescriptorSetLayout layout);
 };
+
+/// <summary>
+/// https://vkguide.dev/docs/new_chapter_4/descriptor_abstractions/
+/// </summary>
+struct DescriptorAllocatorGrowable {
+public:
+    struct PoolSizeRatio {
+        VkDescriptorType type;
+        float ratio;
+    };
+
+    void init(VkDevice device, uint32_t initialSets, std::span<PoolSizeRatio> poolRatios);
+    void clear_pools(VkDevice device);
+    void destroy_pools(VkDevice device);
+
+    VkDescriptorSet allocate(VkDevice device, VkDescriptorSetLayout layout, void* pNext = nullptr);
+private:
+    VkDescriptorPool get_pool(VkDevice device);
+    VkDescriptorPool create_pool(VkDevice device, uint32_t setCount, std::span<PoolSizeRatio> poolRatios);
+
+    std::vector<PoolSizeRatio> ratios;
+    std::vector<VkDescriptorPool> fullPools;
+    std::vector<VkDescriptorPool> readyPools;
+    uint32_t setsPerPool;
+
+};
+
+/// <summary>
+/// https://vkguide.dev/docs/new_chapter_4/descriptor_abstractions/
+/// </summary>
+struct DescriptorWriter {
+    std::deque<VkDescriptorImageInfo> imageInfos;
+    std::deque<VkDescriptorBufferInfo> bufferInfos;
+    std::vector<VkWriteDescriptorSet> writes;
+
+    /// <summary>
+    /// https://vkguide.dev/docs/new_chapter_4/descriptor_abstractions/
+    /// </summary>
+    /// <param name="binding"></param>
+    /// <param name="image"></param>
+    /// <param name="sampler"></param>
+    /// <param name="layout">VK_IMAGE_LAYOUT_[SHADER_READ_ONLY_OPTIMAL | GENERAL]</param>
+    /// <param name="type"></param>
+    void write_image(int binding, VkImageView image, VkSampler sampler, VkImageLayout layout, VkDescriptorType type);
+
+    /// <summary>
+    /// https://vkguide.dev/docs/new_chapter_4/descriptor_abstractions/
+    /// </summary>
+    /// <param name="binding"></param>
+    /// <param name="buffer"></param>
+    /// <param name="size"></param>
+    /// <param name="offset"></param>
+    /// <param name="type">VK_DESCRIPTOR_TYPE_[UNIFORM_BUFFER|STORAGE_BUFFER|UNIFORM_BUFFER_DYNAMIC|STORAGE_BUFFER_DYNAMIC]</param>
+    void write_buffer(int binding, VkBuffer buffer, size_t size, size_t offset, VkDescriptorType type);
+
+    void clear();
+    void update_set(VkDevice device, VkDescriptorSet set);
+};

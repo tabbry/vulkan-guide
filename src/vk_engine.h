@@ -8,6 +8,19 @@
 #include <vk_loader.h>
 
 /// <summary>
+/// Basic Scene Data for premultiplied view-projection matrix and some very basic lighting.
+/// https://vkguide.dev/docs/new_chapter_4/descriptor_abstractions/
+/// </summary>
+struct GPUSceneData {
+	glm::mat4 view;
+	glm::mat4 proj;
+	glm::mat4 viewproj;
+	glm::vec4 ambientColor;
+	glm::vec4 sunlightDirection; // w for sun power
+	glm::vec4 sunlightColor;
+};
+
+/// <summary>
 /// https://vkguide.dev/docs/new_chapter_2/vulkan_pushconstants/
 /// </summary>
 struct ComputePushConstants {
@@ -78,6 +91,11 @@ struct FrameData {
 	/// The deletion queue for objects which are used within one frame.
 	/// </summary>
 	DeletionQueue _deletionQueue;
+
+	/// <summary>
+	/// Descriptors created during runtime for fast reset.
+	/// </summary>
+	DescriptorAllocatorGrowable _frameDescriptors;
 };
 
 constexpr unsigned int FRAME_OVERLAP = 2;
@@ -141,6 +159,9 @@ public:
 	VkPipeline _meshPipeline;
 
 	std::vector<std::shared_ptr<MeshAsset>> testMeshes;
+
+	GPUSceneData sceneData;
+	VkDescriptorSetLayout _gpuSceneDataDescriptorLayout;
 
 	struct SDL_Window* _window{ nullptr };
 

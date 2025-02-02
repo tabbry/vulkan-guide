@@ -446,6 +446,23 @@ https://vkguide.dev/docs/new_chapter_3/resizing_window/
 
 - instead of reallocating all the images, the guide recommends to adjust the sacling of the rendering.
 
+## 3. Textures and Engine Architecture
+
+### Descriptor Abstractions
+
+https://vkguide.dev/docs/new_chapter_4/descriptor_abstractions/
+
+- previous descriptor allocator would crash if the pool ran out of space
+
+#### Descriptor Writer
+
+- `std::deque` garantees the validity of it's element's pointers.
+
+#### Dynamic Descriptor Allocation
+
+- for allocating descriptors during runtime an allocator is added to the FrameData.
+- Resetting the whole descriptor pool is faster than keeping track of individual descriptors.
+
 # Open Questions
 
 - What is DynamicRendering? Why would I want to skip renderpasses/framebuffers?
@@ -454,3 +471,4 @@ https://vkguide.dev/docs/new_chapter_3/resizing_window/
 - What are bindless textures?
 - What is a dynamic buffer?
 - What is a forward declaration?
+- Why is the global scene data descriptor one created at runtime?
