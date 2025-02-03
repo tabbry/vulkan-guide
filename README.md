@@ -463,6 +463,22 @@ https://vkguide.dev/docs/new_chapter_4/descriptor_abstractions/
 - for allocating descriptors during runtime an allocator is added to the FrameData.
 - Resetting the whole descriptor pool is faster than keeping track of individual descriptors.
 
+## 4. Textures and Engine Architecture
+
+### Descriptor Abstractions
+
+### Textures
+
+https://vkguide.dev/docs/new_chapter_4/textures/
+
+- A Cubemap is an example for an image with multiple (6) layers.
+
+#### Binding images to shaders
+
+- `VK_DESCRIPTOR_TYPE_STORAGE_IMAGE` was used for read/write texture without sampler
+- HW sampler method "packaged": `VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER` packages image and sampler, easier to handle. Used in the guide.
+- HW sampler method "separated": `VK_DESCRIPTOR_TYPE_SAMPLER` together with `VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE`, less duplicated data, slightly faster.
+
 # Open Questions
 
 - What is DynamicRendering? Why would I want to skip renderpasses/framebuffers?
