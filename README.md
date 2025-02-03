@@ -479,6 +479,16 @@ https://vkguide.dev/docs/new_chapter_4/textures/
 - HW sampler method "packaged": `VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER` packages image and sampler, easier to handle. Used in the guide.
 - HW sampler method "separated": `VK_DESCRIPTOR_TYPE_SAMPLER` together with `VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE`, less duplicated data, slightly faster.
 
+### Engine Architecture
+
+https://vkguide.dev/docs/new_chapter_4/engine_arch/
+
+- the guide defines `RenderObject`, `MaterialPipeline`, `MaterialInstance` with a short summary.
+- The number of pipelines should be kept at the minimum for maximum performance.
+- 2 pipelines will be used: Opaque and Transparent.
+- A scene graph of medium/low performance is introduced.
+- `IRenderable` having `void Draw(...)` is introduced, and will be the base for the nodes of the scene graph.
+
 # Open Questions
 
 - What is DynamicRendering? Why would I want to skip renderpasses/framebuffers?
