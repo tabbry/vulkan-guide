@@ -489,6 +489,15 @@ https://vkguide.dev/docs/new_chapter_4/engine_arch/
 - A scene graph of medium/low performance is introduced.
 - `IRenderable` having `void Draw(...)` is introduced, and will be the base for the nodes of the scene graph.
 
+### Setting up Materials
+
+https://vkguide.dev/docs/new_chapter_4/materials/
+
+- the guide defines some structs to represent material data.
+- the code for creating `GLTFMetallic_Roughness` material is added and explained.
+- a new vert and frag shader are added.
+- the new material is initizlaied as pipeline and in the `init_default_data`.
+
 # Open Questions
 
 - What is DynamicRendering? Why would I want to skip renderpasses/framebuffers?
