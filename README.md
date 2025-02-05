@@ -498,6 +498,13 @@ https://vkguide.dev/docs/new_chapter_4/materials/
 - a new vert and frag shader are added.
 - the new material is initizlaied as pipeline and in the `init_default_data`.
 
+### Meshes and Camera
+
+https://vkguide.dev/docs/new_chapter_4/new_drawloop/
+
+- binding of the data in `draw_geometry` is inefficient, as it is done every frame. Fill be fixed later.
+- When loading the meshes, shared pointers are used to create the nodes and assign materials. This is done because the nodes can share the same meshes or materials.
+
 # Open Questions
 
 - What is DynamicRendering? Why would I want to skip renderpasses/framebuffers?
