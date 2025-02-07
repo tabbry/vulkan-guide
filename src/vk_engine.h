@@ -7,6 +7,8 @@
 #include <vk_descriptors.h>
 #include <vk_loader.h>
 
+#include <camera.h>
+
 struct MeshNode : public Node {
 
 	std::shared_ptr<MeshAsset> mesh;
@@ -163,7 +165,7 @@ public:
 	bool _isInitialized{ false };
 	int _frameNumber {0};
 	bool stop_rendering{ false };
-	VkExtent2D _windowExtent{ 1920 , 1080 };
+	VkExtent2D _windowExtent{ 1200 , 720};
 	bool resize_requested{ false };
 
 	VkInstance _instance;
@@ -235,6 +237,8 @@ public:
 
 	DrawContext mainDrawContext;
 	std::unordered_map<std::string, std::shared_ptr<Node>> loadedNodes;
+
+	Camera mainCamera;
 
 	struct SDL_Window* _window{ nullptr };
 

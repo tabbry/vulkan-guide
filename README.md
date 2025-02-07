@@ -505,6 +505,17 @@ https://vkguide.dev/docs/new_chapter_4/new_drawloop/
 - binding of the data in `draw_geometry` is inefficient, as it is done every frame. Fill be fixed later.
 - When loading the meshes, shared pointers are used to create the nodes and assign materials. This is done because the nodes can share the same meshes or materials.
 
+## 5. GLTF loading
+
+### Interactive Camera
+
+https://vkguide.dev/docs/new_chapter_5/interactive_camera/
+
+- pitch + yaw is used for camera rotation opposed to full rotation.
+- movement is not optimal, as keyup sets velocity to 0.
+- so far everything is in relation to fps, no system time.
+- camera logic is added and implemented.
+
 # Open Questions
 
 - What is DynamicRendering? Why would I want to skip renderpasses/framebuffers?
