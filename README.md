@@ -516,6 +516,13 @@ https://vkguide.dev/docs/new_chapter_5/interactive_camera/
 - so far everything is in relation to fps, no system time.
 - camera logic is added and implemented.
 
+### GLTF Scene Nodes
+
+https://vkguide.dev/docs/new_chapter_5/gltf_nodes/
+
+- using geometry, material and textures info, meshes are created.
+- using parents, hierarchical scene tree is created.
+
 # Open Questions
 
 - What is DynamicRendering? Why would I want to skip renderpasses/framebuffers?
