@@ -12,6 +12,7 @@
 #include <vk_types.h>
 #include <vk_images.h>
 #include <vk_pipelines.h>
+#include <vk_loader.h>
 
 #include "imgui.h"
 #include "imgui_impl_sdl2.h"
@@ -66,9 +67,16 @@ void VulkanEngine::init()
     init_default_data();
 
     mainCamera.velocity = glm::vec3(0.f);
-    mainCamera.position = glm::vec3(0, 0, 5);
+    mainCamera.position = glm::vec3(30.f, -00.f, -085.f);
     mainCamera.pitch = 0;
     mainCamera.yaw = 0;
+
+    std::string structurePath = { "..\\assets\\structure.glb" };
+    auto structureFile = loadGltf(this, structurePath);
+
+    assert(structureFile.has_value());
+
+    loadedScenes["structure"] = *structureFile;
 
     // everything went fine
     _isInitialized = true;
@@ -249,6 +257,8 @@ void VulkanEngine::cleanup()
     if (_isInitialized) {
         //make sure the gpu has stopped doing its things
         vkDeviceWaitIdle(_device);
+
+        loadedScenes.clear();
 
         for (int i = 0; i < FRAME_OVERLAP; i++) {
             vkDestroyCommandPool(_device, _frames[i]._commandPool, nullptr);
@@ -852,8 +862,6 @@ void VulkanEngine::resize_swapchain()
 }
 
 void VulkanEngine::init_default_data() {
-    testMeshes = loadGltfMeshes(this, "../assets/basicmesh.glb").value();
-
     //3 default textures, white, grey, black. 1 pixel each
     uint32_t white = glm::packUnorm4x8(glm::vec4(1, 1, 1, 1));
     _whiteImage = create_image((void*)&white, VkExtent3D{ 1, 1, 1 }, VK_FORMAT_R8G8B8A8_UNORM,
@@ -966,6 +974,12 @@ void VulkanEngine::destroy_buffer(const AllocatedBuffer& buffer)
     vmaDestroyBuffer(_allocator, buffer.buffer, buffer.allocation);
 }
 
+/// <summary>
+/// Takes mesh info and creates optimal mesh buffers on the GPU. It's using a temporary staging buffer.
+/// </summary>
+/// <param name="indices"></param>
+/// <param name="vertices"></param>
+/// <returns></returns>
 GPUMeshBuffers VulkanEngine::uploadMesh(std::span<uint32_t> indices, std::span<Vertex> vertices)
 {
     const size_t vertexBufferSize = vertices.size() * sizeof(Vertex);
@@ -1402,21 +1416,11 @@ void VulkanEngine::update_scene()
 
     mainDrawContext.OpaqueSurfaces.clear();
 
-    loadedNodes["Suzanne"]->Draw(glm::mat4{ 1.f }, mainDrawContext);
+    loadedScenes["structure"]->Draw(glm::mat4{ 1.f }, mainDrawContext);
 
     auto now = std::chrono::high_resolution_clock::now();
     double seconds = std::chrono::duration<double>(now.time_since_epoch()).count();
     double fractional_seconds = fmod(seconds, 60.0);
-
-    for (int x = -3; x < 3; x++) {
-   
-        float s = 1.0 + sin((fractional_seconds + 5 * x) * 0.95492965855137201461330258023509);
-
-        glm::mat4 scale = glm::scale(glm::vec3{ s * 0.1f});
-        glm::mat4 translation = glm::translate(glm::vec3{ x, 1, 0 });
-
-        loadedNodes["Cube"]->Draw(translation * scale, mainDrawContext);
-    }
 
     sceneData.view = mainCamera.getViewMatrix();
     sceneData.proj = glm::perspective(glm::radians(70.f), (float)_windowExtent.width / (float)_windowExtent.height, 10000.f, 0.1f);
