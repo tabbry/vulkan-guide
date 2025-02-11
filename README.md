@@ -523,6 +523,14 @@ https://vkguide.dev/docs/new_chapter_5/gltf_nodes/
 - using geometry, material and textures info, meshes are created.
 - using parents, hierarchical scene tree is created.
 
+
+### GLTF Textures
+
+https://vkguide.dev/docs/new_chapter_5/gltf_textures/
+
+- stb_image is used for loading images as textures
+- KTX/DDS is not supported
+
 # Open Questions
 
 - What is DynamicRendering? Why would I want to skip renderpasses/framebuffers?
