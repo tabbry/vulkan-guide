@@ -522,6 +522,7 @@ https://vkguide.dev/docs/new_chapter_5/gltf_nodes/
 
 - using geometry, material and textures info, meshes are created.
 - using parents, hierarchical scene tree is created.
+- `LoadedGLTF` cannot be destroyed in the same frame in which it is used. The guide lists 2 alternatives.
 
 
 ### GLTF Textures
@@ -529,7 +530,7 @@ https://vkguide.dev/docs/new_chapter_5/gltf_nodes/
 https://vkguide.dev/docs/new_chapter_5/gltf_textures/
 
 - stb_image is used for loading images as textures
-- KTX/DDS is not supported
+- KTX/DDS is not supported, but would be better for gpu usage.
 
 # Open Questions
 
@@ -540,3 +541,4 @@ https://vkguide.dev/docs/new_chapter_5/gltf_textures/
 - What is a dynamic buffer?
 - What is a forward declaration?
 - Why is the global scene data descriptor one created at runtime?
+- Why are images destroyed before samplers in `LoadedGLTF::clearAll`?

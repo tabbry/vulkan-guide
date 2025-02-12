@@ -1,6 +1,9 @@
 #include <vk_images.h>
 #include <vk_initializers.h>
 
+#define STB_IMAGE_IMPLEMENTATION
+#include "stb_image.h"
+
 /// <summary>
 /// https://vkguide.dev/docs/new_chapter_1/vulkan_mainloop_code/
 /// </summary>
@@ -72,3 +75,4 @@ void vkutil::copy_image_to_image(VkCommandBuffer cmd, VkImage source, VkImage de
 
 	vkCmdBlitImage2(cmd, &blitInfo);
 }
+

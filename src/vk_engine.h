@@ -29,6 +29,7 @@ struct RenderObject {
 
 struct DrawContext {
 	std::vector<RenderObject> OpaqueSurfaces;
+	std::vector<RenderObject> TransparentSurfaces;
 };
 
 struct GLTFMetallic_Roughness {
@@ -280,6 +281,10 @@ public:
 
 	void destroy_buffer(const AllocatedBuffer& buffer);
 
+	AllocatedImage create_image(VkExtent3D size, VkFormat format, VkImageUsageFlags usage, bool mipmapped = false);
+	AllocatedImage create_image(void* data, VkExtent3D size, VkFormat format, VkImageUsageFlags usage, bool mipmapped = false);
+	void destroy_image(const AllocatedImage& img);
+
 private:
 	void init_vulkan();
 	void init_swapchain();
@@ -300,10 +305,6 @@ private:
 	void create_swapchain(uint32_t width, uint32_t height);
 	void destroy_swapchain();
 	void resize_swapchain();
-
-	AllocatedImage create_image(VkExtent3D size, VkFormat format, VkImageUsageFlags usage, bool mipmapped = false);
-	AllocatedImage create_image(void* data, VkExtent3D size, VkFormat format, VkImageUsageFlags usage, bool mipmapped = false);
-	void destroy_image(const AllocatedImage& img);
 
 	void update_scene();
 };

@@ -25,6 +25,9 @@ struct MeshAsset {
 //forward declaration
 class VulkanEngine;
 
+/// <summary>
+/// Should not be deleted in the same frame as it is used. More details: https://vkguide.dev/docs/new_chapter_5/gltf_textures/
+/// </summary>
 struct LoadedGLTF : public IRenderable {
 
     // storage for all the data on a given glTF file
