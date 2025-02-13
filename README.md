@@ -536,8 +536,22 @@ https://vkguide.dev/docs/new_chapter_5/gltf_textures/
 
 https://vkguide.dev/docs/new_chapter_5/faster_draw/
 
+#### Draw Sorting
 
+- the opaque objects to be rendered are sorted by material.
+- transparent objects need depth sorting, requires information about  center of the object. skipped in the guide.
  
+#### Frustum Culling
+
+- AABBs are added together with a `is_visible` function.
+
+#### Creating Mipmaps
+
+- unlike OpenGL, Vulkan doesn't have a one call method to generate mipmaps, they have to be generated seperately.
+- Mipmaps don't have to be pregenerated.
+- KTS/DDR can have mipmaps pregenerated.
+- Compute shaders can be used for generating mipmaps.
+
 # Open Questions
 
 - What is DynamicRendering? Why would I want to skip renderpasses/framebuffers?

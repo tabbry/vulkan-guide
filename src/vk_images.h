@@ -22,4 +22,12 @@ namespace vkutil {
 	/// <param name="srcSize"></param>
 	/// <param name="dstSize"></param>
 	void copy_image_to_image(VkCommandBuffer cmd, VkImage source, VkImage destination, VkExtent2D srcSize, VkExtent2D dstSize);
+
+	/// <summary>
+	/// https://vkguide.dev/docs/new_chapter_5/faster_draw/
+	/// </summary>
+	/// <param name="cmd"></param>
+	/// <param name="image"></param>
+	/// <param name="imageSize"></param>
+	void generate_mipmaps(VkCommandBuffer cmd, VkImage image, VkExtent2D imageSize);
 };
