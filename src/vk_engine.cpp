@@ -50,6 +50,8 @@ void VulkanEngine::init()
         _windowExtent.height,
         window_flags);
 
+    SDL_SetRelativeMouseMode(SDL_TRUE);
+
     init_vulkan();
 
     init_swapchain();
@@ -547,8 +549,8 @@ void VulkanEngine::run()
     SDL_Event e;
     bool bQuit = false;
 
-    auto lastTime = std::chrono::high_resolution_clock::now();
-    auto lastFrameNumber{ _frameNumber };
+    auto lastFpsUpdateTime = std::chrono::high_resolution_clock::now();
+    auto lastFpsUpdateFrameNumber{ _frameNumber };
 
     // main loop
     while (!bQuit) {
@@ -606,15 +608,15 @@ void VulkanEngine::run()
         draw();
 
         auto currentTime = std::chrono::high_resolution_clock::now();
-        auto elapsed = std::chrono::duration<double>(currentTime - lastTime).count();
+        auto secondsElapsedSinceLastFpsUpdate = std::chrono::duration<double>(currentTime - lastFpsUpdateTime).count();
 
-        if (elapsed >= 1.0) {
-            auto fps{ (_frameNumber - lastFrameNumber) / elapsed };
+        if (secondsElapsedSinceLastFpsUpdate >= 1.0) {
+            auto fps{ (_frameNumber - lastFpsUpdateFrameNumber) / secondsElapsedSinceLastFpsUpdate };
             
             fmt::println("FPS: {}", fps);
 
-            lastFrameNumber = _frameNumber;
-            lastTime = currentTime;
+            lastFpsUpdateFrameNumber = _frameNumber;
+            lastFpsUpdateTime = currentTime;
         }
     }
 }
@@ -1434,7 +1436,14 @@ void VulkanEngine::update_scene()
     sceneData.proj = glm::perspective(glm::radians(70.f), (float)_windowExtent.width / (float)_windowExtent.height, 10000.f, 0.1f);
 
     sceneData.proj[1][1] *= -1;
+
+    float k = 20;
+    sceneData.proj[0][0] *= 1.f + k * mainCamera.pitchYawDelta.x;
+    sceneData.proj[1][1] *= 1.f + k * mainCamera.pitchYawDelta.y;
+
     sceneData.viewproj = sceneData.proj * sceneData.view;
+
+    
 
     //some default lighting parameters
     sceneData.ambientColor = glm::vec4(.1f);
