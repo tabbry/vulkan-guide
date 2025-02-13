@@ -455,6 +455,24 @@ void VulkanEngine::draw_geometry(VkCommandBuffer cmd) {
 
     auto start = std::chrono::system_clock::now();
 
+    std::vector<uint32_t> opaque_draws;
+    opaque_draws.reserve(mainDrawContext.OpaqueSurfaces.size());
+
+    for (uint32_t i = 0; i < mainDrawContext.OpaqueSurfaces.size(); i++) {
+        opaque_draws.push_back(i);
+    }
+
+    std::sort(opaque_draws.begin(), opaque_draws.end(), [&](const auto& iA, const auto& iB) {
+        const RenderObject& A = mainDrawContext.OpaqueSurfaces[iA];
+        const RenderObject& B = mainDrawContext.OpaqueSurfaces[iB];
+        if (A.material == B.material) {
+            return A.indexBuffer < B.indexBuffer;
+        }
+        else {
+            return A.material < B.material;
+        }
+    });
+
     //begin a render pass  connected to our draw image
     VkRenderingAttachmentInfo colorAttachment = vkinit::attachment_info(_drawImage.imageView, nullptr, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL);
     VkRenderingAttachmentInfo depthAttachment = vkinit::depth_attachment_info(_depthImage.imageView, VK_IMAGE_LAYOUT_DEPTH_ATTACHMENT_OPTIMAL);
@@ -464,8 +482,6 @@ void VulkanEngine::draw_geometry(VkCommandBuffer cmd) {
     vkCmdBeginRendering(cmd, &renderInfo);
 
     vkCmdBindPipeline(cmd, VK_PIPELINE_BIND_POINT_GRAPHICS, _meshPipeline);
-
-
 
     //bind a texture
     VkDescriptorSet imageSet = get_current_frame()._frameDescriptors.allocate(_device, _singleImageDescriptorLayout);
@@ -558,8 +574,8 @@ void VulkanEngine::draw_geometry(VkCommandBuffer cmd) {
         stats.triangle_count += draw.indexCount / 3;
     };
 
-    for (const RenderObject& r : mainDrawContext.OpaqueSurfaces) {
-        draw(r);
+    for (auto& r : opaque_draws) {
+        draw(mainDrawContext.OpaqueSurfaces[r]);
     }
 
     for (const RenderObject& r : mainDrawContext.TransparentSurfaces) {
