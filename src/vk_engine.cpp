@@ -28,7 +28,7 @@
 
 VulkanEngine* loadedEngine = nullptr;
 
-constexpr bool bUseValidationLayers = false;
+constexpr bool bUseValidationLayers = true;
 
 VulkanEngine& VulkanEngine::Get() { return *loadedEngine; }
 void VulkanEngine::init()
@@ -450,6 +450,11 @@ void VulkanEngine::draw_imgui(VkCommandBuffer cmd, VkImageView targetImageView)
 }
 
 void VulkanEngine::draw_geometry(VkCommandBuffer cmd) {
+    stats.drawcall_count = 0;
+    stats.triangle_count = 0;
+
+    auto start = std::chrono::system_clock::now();
+
     //begin a render pass  connected to our draw image
     VkRenderingAttachmentInfo colorAttachment = vkinit::attachment_info(_drawImage.imageView, nullptr, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL);
     VkRenderingAttachmentInfo depthAttachment = vkinit::depth_attachment_info(_depthImage.imageView, VK_IMAGE_LAYOUT_DEPTH_ATTACHMENT_OPTIMAL);
@@ -531,6 +536,9 @@ void VulkanEngine::draw_geometry(VkCommandBuffer cmd) {
         vkCmdPushConstants(cmd, draw.material->pipeline->layout, VK_SHADER_STAGE_VERTEX_BIT, 0, sizeof(GPUDrawPushConstants), &pushConstants);
 
         vkCmdDrawIndexed(cmd, draw.indexCount, 1, draw.firstIndex, 0, 0);
+
+        stats.drawcall_count++;
+        stats.triangle_count += draw.indexCount / 3;
     };
 
     for (const RenderObject& r : mainDrawContext.OpaqueSurfaces) {
@@ -542,6 +550,11 @@ void VulkanEngine::draw_geometry(VkCommandBuffer cmd) {
     }
 
     vkCmdEndRendering(cmd);
+
+    auto end = std::chrono::system_clock::now();
+
+    auto elapsed = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
+    stats.mesh_draw_time = elapsed.count() / 1000.f;
 }
 
 void VulkanEngine::run()
@@ -554,6 +567,8 @@ void VulkanEngine::run()
 
     // main loop
     while (!bQuit) {
+        auto start = std::chrono::system_clock::now();
+
         // Handle events on queue
         while (SDL_PollEvent(&e) != 0) {
             // close the window when user alt-f4s or clicks the X button
@@ -588,19 +603,13 @@ void VulkanEngine::run()
         ImGui_ImplSDL2_NewFrame();
         ImGui::NewFrame();
 
-        if (ImGui::Begin("background")) {
-            ImGui::SliderFloat("Render Scale", &renderScale, 0.3f, 1.f);
+        ImGui::Begin("Stats");
 
-            ComputeEffect& selected = backgroundEffects[currentBackgroundEffect];
-
-            ImGui::Text("Selected effect: ", selected.name);
-            ImGui::SliderInt("Effect Index", &currentBackgroundEffect, 0, backgroundEffects.size() - 1);
-
-            ImGui::InputFloat4("data1", (float*)&selected.data.data1);
-            ImGui::InputFloat4("data2", (float*)&selected.data.data2);
-            ImGui::InputFloat4("data3", (float*)&selected.data.data3);
-            ImGui::InputFloat4("data4", (float*)&selected.data.data4);
-        }
+        ImGui::Text("frametime %f ms", stats.frametime);
+        ImGui::Text("draw time %f ms", stats.mesh_draw_time);
+        ImGui::Text("update time %f ms", stats.scene_update_time);
+        ImGui::Text("triangles %i", stats.triangle_count);
+        ImGui::Text("draws %i", stats.drawcall_count);
         ImGui::End();
 
         ImGui::Render();
@@ -618,6 +627,11 @@ void VulkanEngine::run()
             lastFpsUpdateFrameNumber = _frameNumber;
             lastFpsUpdateTime = currentTime;
         }
+
+        auto end = std::chrono::system_clock::now();
+
+        auto elapsed = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
+        stats.frametime = elapsed.count() / 1000.f;
     }
 }
 
@@ -1421,6 +1435,8 @@ void MeshNode::Draw(const glm::mat4& topMatrix, DrawContext& ctx)
 
 void VulkanEngine::update_scene()
 {
+    auto start = std::chrono::system_clock::now();
+
     mainCamera.update();
 
     mainDrawContext.OpaqueSurfaces.clear();
@@ -1436,17 +1452,14 @@ void VulkanEngine::update_scene()
     sceneData.proj = glm::perspective(glm::radians(70.f), (float)_windowExtent.width / (float)_windowExtent.height, 10000.f, 0.1f);
 
     sceneData.proj[1][1] *= -1;
-
-    float k = 20;
-    sceneData.proj[0][0] *= 1.f + k * mainCamera.pitchYawDelta.x;
-    sceneData.proj[1][1] *= 1.f + k * mainCamera.pitchYawDelta.y;
-
     sceneData.viewproj = sceneData.proj * sceneData.view;
-
-    
 
     //some default lighting parameters
     sceneData.ambientColor = glm::vec4(.1f);
     sceneData.sunlightColor = glm::vec4(1.f);
     sceneData.sunlightDirection = glm::vec4(0, 1, 0.5, 1.f);
+
+    auto end = std::chrono::system_clock::now();
+    auto elapsed = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
+    stats.scene_update_time = elapsed.count() / 1000.f;
 }

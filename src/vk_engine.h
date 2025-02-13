@@ -9,6 +9,17 @@
 
 #include <camera.h>
 
+struct EngineStats {
+	/// <summary>
+	/// Global timing. Effectively locked when using Vsync.
+	/// </summary>
+	float frametime;
+	int triangle_count;
+	int drawcall_count;
+	float scene_update_time;
+	float mesh_draw_time;
+};
+
 struct MeshNode : public Node {
 
 	std::shared_ptr<MeshAsset> mesh;
@@ -242,6 +253,8 @@ public:
 	std::unordered_map<std::string, std::shared_ptr<Node>> loadedNodes;
 
 	Camera mainCamera;
+
+	EngineStats stats;
 
 	struct SDL_Window* _window{ nullptr };
 
