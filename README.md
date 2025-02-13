@@ -532,6 +532,12 @@ https://vkguide.dev/docs/new_chapter_5/gltf_textures/
 - stb_image is used for loading images as textures
 - KTX/DDS is not supported, but would be better for gpu usage.
 
+### Faster Draw
+
+https://vkguide.dev/docs/new_chapter_5/faster_draw/
+
+
+ 
 # Open Questions
 
 - What is DynamicRendering? Why would I want to skip renderpasses/framebuffers?
